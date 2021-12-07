@@ -46,3 +46,28 @@ pub fn part1(input: &str) -> Result<u64, ParseIntError> {
 
     Ok(horizontal * depth)
 }
+
+#[aoc(day2, part2)]
+pub fn part2(input: &str) -> Result<u64, ParseIntError> {
+    let commands = input
+        .split('\n')
+        .map(|line| line.parse::<Command>())
+        .collect::<Result<Vec<_>, _>>()?;
+
+    let mut aim = 0;
+    let mut depth = 0;
+    let mut horizontal = 0;
+
+    for command in commands {
+        match command {
+            Command::Down(distance) => aim += distance,
+            Command::Forward(distance) => {
+                horizontal += distance;
+                depth += distance * aim
+            }
+            Command::Up(distance) => aim -= distance,
+        }
+    }
+
+    Ok(horizontal * depth)
+}
