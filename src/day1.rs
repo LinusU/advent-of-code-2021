@@ -20,6 +20,6 @@ pub fn part2(input: &str) -> Result<u64, ParseIntError> {
         .map(|depth| depth.parse::<u64>())
         .collect::<Result<Vec<_>, _>>()?
         .windows(4)
-        .map(|slice| if (slice[1] + slice[2] + slice[3]) > (slice[0] + slice[1] + slice[2]) { 1 } else { 0 })
+        .map(|slice| if slice[3] > slice[0] { 1 } else { 0 })
         .sum())
 }
