@@ -1,6 +1,23 @@
 use std::num::ParseIntError;
+use std::str::FromStr;
 
 use aoc_runner_derive::aoc;
+
+struct U12(u64);
+
+impl U12 {
+    fn bit_at(&self, index: usize) -> u64 {
+        (self.0 >> (11 - index)) & 1
+    }
+}
+
+impl FromStr for U12 {
+    type Err = ParseIntError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(U12(u64::from_str_radix(s, 2)?))
+    }
+}
 
 #[aoc(day3, part1)]
 pub fn part1(input: &str) -> Result<u64, ParseIntError> {
@@ -8,21 +25,21 @@ pub fn part1(input: &str) -> Result<u64, ParseIntError> {
     let mut counts = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     for number in input.split_whitespace() {
-        let number = u64::from_str_radix(number, 2)?;
+        let number = U12::from_str(number)?;
 
         num_lines += 1;
-        counts.0 += (number & 0x800) >> 11;
-        counts.1 += (number & 0x400) >> 10;
-        counts.2 += (number & 0x200) >> 9;
-        counts.3 += (number & 0x100) >> 8;
-        counts.4 += (number & 0x080) >> 7;
-        counts.5 += (number & 0x040) >> 6;
-        counts.6 += (number & 0x020) >> 5;
-        counts.7 += (number & 0x010) >> 4;
-        counts.8 += (number & 0x008) >> 3;
-        counts.9 += (number & 0x004) >> 2;
-        counts.10 += (number & 0x02) >> 1;
-        counts.11 += number & 0x01;
+        counts.0 += number.bit_at(0);
+        counts.1 += number.bit_at(1);
+        counts.2 += number.bit_at(2);
+        counts.3 += number.bit_at(3);
+        counts.4 += number.bit_at(4);
+        counts.5 += number.bit_at(5);
+        counts.6 += number.bit_at(6);
+        counts.7 += number.bit_at(7);
+        counts.8 += number.bit_at(8);
+        counts.9 += number.bit_at(9);
+        counts.10 += number.bit_at(10);
+        counts.11 += number.bit_at(11);
     }
 
     let half = num_lines as u64 / 2;
