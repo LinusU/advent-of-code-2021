@@ -3,10 +3,12 @@ use std::str::FromStr;
 
 use aoc_runner_derive::aoc;
 
+#[derive(Clone, Copy)]
 struct U12(u64);
 
 impl U12 {
     fn bit_at(&self, index: usize) -> u64 {
+        assert!(index < 12);
         (self.0 >> (11 - index)) & 1
     }
 }
@@ -71,4 +73,66 @@ pub fn part1(input: &str) -> Result<u64, ParseIntError> {
         + if counts.11 < half { 1 } else { 0 });
 
     Ok(gamma * epsilon)
+}
+
+#[aoc(day3, part2)]
+pub fn part2(input: &str) -> Result<u64, ParseIntError> {
+    let numbers = input
+        .split_whitespace()
+        .map(|src| U12::from_str(src))
+        .collect::<Result<Vec<_>, _>>()?;
+
+    let oxygen_generator_rating = {
+        let mut pos = 0;
+        let mut filtered_numbers = numbers.clone();
+
+        loop {
+            let ones_in_position = filtered_numbers
+                .iter()
+                .filter(|number| number.bit_at(pos) == 1)
+                .count();
+
+            let target = if (ones_in_position * 2) >= filtered_numbers.len() {
+                1
+            } else {
+                0
+            };
+
+            filtered_numbers.retain(|number| number.bit_at(pos) == target);
+
+            if filtered_numbers.len() == 1 {
+                break filtered_numbers[0];
+            }
+
+            pos += 1;
+        }
+    };
+
+    let co2_scrubber_rating = {
+        let mut pos = 0;
+        let mut filtered_numbers = numbers;
+
+        loop {
+            let ones_in_position = filtered_numbers
+                .iter()
+                .filter(|number| number.bit_at(pos) == 1)
+                .count();
+
+            let target = if (ones_in_position * 2) < filtered_numbers.len() {
+                1
+            } else {
+                0
+            };
+
+            filtered_numbers.retain(|number| number.bit_at(pos) == target);
+
+            if filtered_numbers.len() == 1 {
+                break filtered_numbers[0];
+            }
+
+            pos += 1;
+        }
+    };
+
+    Ok(oxygen_generator_rating.0 * co2_scrubber_rating.0)
 }
