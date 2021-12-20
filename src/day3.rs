@@ -4,30 +4,32 @@ use aoc_runner_derive::aoc;
 
 #[aoc(day3, part1)]
 pub fn part1(input: &str) -> Result<u64, ParseIntError> {
-    let counts =
-        input
-            .split_whitespace()
-            .fold((0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), |mem, number| {
-                let mut chars = number.chars();
+    let numbers = input
+        .split_whitespace()
+        .map(|s| u64::from_str_radix(s, 2))
+        .collect::<Result<Vec<_>, _>>()?;
 
+    let counts =
+        numbers
+            .iter()
+            .fold((0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), |mem, number| {
                 return (
-                    mem.0 + if chars.next().unwrap() == '1' { 1 } else { 0 },
-                    mem.1 + if chars.next().unwrap() == '1' { 1 } else { 0 },
-                    mem.2 + if chars.next().unwrap() == '1' { 1 } else { 0 },
-                    mem.3 + if chars.next().unwrap() == '1' { 1 } else { 0 },
-                    mem.4 + if chars.next().unwrap() == '1' { 1 } else { 0 },
-                    mem.5 + if chars.next().unwrap() == '1' { 1 } else { 0 },
-                    mem.6 + if chars.next().unwrap() == '1' { 1 } else { 0 },
-                    mem.7 + if chars.next().unwrap() == '1' { 1 } else { 0 },
-                    mem.8 + if chars.next().unwrap() == '1' { 1 } else { 0 },
-                    mem.9 + if chars.next().unwrap() == '1' { 1 } else { 0 },
-                    mem.10 + if chars.next().unwrap() == '1' { 1 } else { 0 },
-                    mem.11 + if chars.next().unwrap() == '1' { 1 } else { 0 },
-                    mem.12 + 1,
+                    mem.0 + ((number & 0x800) >> 11),
+                    mem.1 + ((number & 0x400) >> 10),
+                    mem.2 + ((number & 0x200) >> 9),
+                    mem.3 + ((number & 0x100) >> 8),
+                    mem.4 + ((number & 0x080) >> 7),
+                    mem.5 + ((number & 0x040) >> 6),
+                    mem.6 + ((number & 0x020) >> 5),
+                    mem.7 + ((number & 0x010) >> 4),
+                    mem.8 + ((number & 0x008) >> 3),
+                    mem.9 + ((number & 0x004) >> 2),
+                    mem.10 + ((number & 0x02) >> 1),
+                    mem.11 + (number & 0x01),
                 );
             });
 
-    let half = counts.12 / 2;
+    let half = numbers.len() as u64 / 2;
 
     let gamma = (if counts.0 > half { 2048 } else { 0 }
         + if counts.1 > half { 1024 } else { 0 }
