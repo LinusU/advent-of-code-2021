@@ -17,7 +17,7 @@ impl Line {
 
         let start = self.0.clone();
         let step = (delta.0.signum(), delta.1.signum());
-        let steps = delta.0.abs() + delta.1.abs();
+        let steps = std::cmp::max(delta.0.abs(), delta.1.abs());
 
         (0..=steps).map(move |index| {
             (
@@ -65,6 +65,29 @@ pub fn part1(input: &str) -> Result<u64, ParseIntError> {
                 if smoke[&point] == 2 {
                     result += 1;
                 }
+            }
+        }
+    }
+
+    Ok(result)
+}
+
+#[aoc(day5, part2)]
+pub fn part2(input: &str) -> Result<u64, ParseIntError> {
+    let lines = input
+        .split('\n')
+        .map(|depth| depth.parse::<Line>())
+        .collect::<Result<Vec<_>, _>>()?;
+
+    let mut result = 0;
+    let mut smoke = HashMap::<(u32, u32), u64>::new();
+
+    for line in lines {
+        for point in line.iter_points() {
+            *smoke.entry(point).or_insert(0) += 1;
+
+            if smoke[&point] == 2 {
+                result += 1;
             }
         }
     }
