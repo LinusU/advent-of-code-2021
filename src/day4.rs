@@ -135,3 +135,42 @@ pub fn part1(input: &str) -> Result<u64, ParseIntError> {
 
     panic!("No winning board")
 }
+
+#[aoc(day4, part2)]
+pub fn part2(input: &str) -> Result<u64, ParseIntError> {
+    let mut lines = input.split('\n');
+
+    let numbers = lines
+        .next()
+        .unwrap()
+        .split(',')
+        .map(|s| s.parse::<u8>())
+        .collect::<Result<Vec<_>, _>>()?;
+
+    let mut boards = Vec::<BingoBoard>::new();
+
+    loop {
+        let _empty_line = lines.next();
+
+        match BingoBoard::from_lines(&mut lines) {
+            Some(board) => boards.push(board),
+            None => break,
+        }
+    }
+
+    let mut last_win = Option::<u64>::None;
+
+    for number in numbers {
+        for board in &mut boards {
+            board.mark(number);
+
+            if board.is_winning() {
+                last_win = Some(board.score() * (number as u64));
+            }
+        }
+
+        boards.retain(|board| !board.is_winning());
+    }
+
+    Ok(last_win.unwrap())
+}
